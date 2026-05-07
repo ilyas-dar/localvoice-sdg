@@ -1,11 +1,15 @@
+venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
 *.pkl
 *.pt
 *.bin
-models/
+*.pth
+models/weights/
 pdfs/
 *.pdf
 faiss_index/
-venv/
+*.index
+data/raw/raw_chunks.csv

@@ -13,3 +13,5 @@ pdfs/
 faiss_index/
 *.index
 data/raw/raw_chunks.csv
+auto_annotate.py
+annotate.py

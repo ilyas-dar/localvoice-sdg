@@ -6,6 +6,9 @@
     to ensure that each fold has the same proportion of classes as the original dataset.
 """
 
+
+import pandas as pd
+import json
 # MY CONFIGURATION OF MODEL
 MODEL_NAME="xlm-roberta-base"
 NO_OF_LABELS=17 #sdgs
@@ -38,3 +41,20 @@ SDG_NAMES = {
     16: "Peace, Justice and Strong Institutions",
     17: "Partnerships for the Goals"
 }
+
+def load_data(csvPath):
+    df=pd.read_csv(csvPath)
+    texts=df['text'].tolist()
+    df["parsed_labels"]=df["sdg_labels"].apply(parse_labels)
+
+
+
+def parse_labels(label_str):
+    if label_str == "SKIP":
+        return []
+    labels=json.loads(label_str)
+    return labels
+    
+
+
+load_data(CSV_PATH)

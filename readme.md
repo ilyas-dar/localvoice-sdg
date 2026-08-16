@@ -37,7 +37,8 @@ which we traced back to an unlucky random train/test split.
 - train.py on main still has uncapped pos_weight bug (main left
   untouched on purpose while this branch is in progress)
 - no real numbers yet — pending a full training run
-
+## status
+- preprocessing data. 
 ## Next step
 
 Run training end-to-end (5 folds), get real ensemble numbers, then

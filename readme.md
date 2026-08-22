@@ -115,7 +115,7 @@ Evaluated on 124 held-out test samples (10% of dataset, random_state=42).
 | 16 | Peace & Justice | 1.000 | 1.000 | **1.000** | 8 |
 | 17 | Partnerships | 0.857 | 1.000 | 0.923 | 6 |
 
-> SDG 8 (Decent Work) has only 2 test samples — F1 not statistically significant.
+
 
 ---
 

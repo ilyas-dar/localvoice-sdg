@@ -42,10 +42,6 @@ SDG_NAMES = {
     17: "Partnerships for the Goals"
 }
 
-def load_data(csvPath):
-    df=pd.read_csv(csvPath)
-    texts=df['text'].tolist()
-    df["parsed_labels"]=df["sdg_labels"].apply(parse_labels)
 
 
 
@@ -56,5 +52,34 @@ def parse_labels(label_str):
     return labels
     
 
+def load_data(csvPath):
+    df=pd.read_csv(csvPath)
+    texts=df['text'].tolist()
+    df["parsed_labels"]=df["sdg_labels"].apply(parse_labels)
+    df=df[df["parsed_labels"].apply(len)>0]
 
-load_data(CSV_PATH)
+    texts=df['text'].tolist()
+
+    labels=[]
+    for lbl in df["parsed_labels"]:
+        vec=[0]*NO_OF_LABELS
+        for l in lbl:
+            vec[l-1]=1
+        labels.append(vec)
+    return texts, labels
+
+
+    class SDGDataset:
+        def __init__(self, texts, labels):
+            self.texts = texts
+            self.labels = labels
+
+
+
+
+texts, labels = load_data(CSV_PATH)
+
+
+print(f"Total number of samples: {len(texts)}") 
+print(texts[0])
+print(labels[0])

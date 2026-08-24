@@ -38,8 +38,8 @@ which we traced back to an unlucky random train/test split.
   untouched on purpose while this branch is in progress)
 - no real numbers yet — pending a full training run
 ## status
-- preprocessing data. 
+- load_data + parse_labels, verified with real CSV (1,238 samples, correct filtering, correct label vectors). 
+  
 ## Next step
 
-Run training end-to-end (5 folds), get real ensemble numbers, then
-update main readme.md with verified metrics.
+- SDGDataset class (tokenization + tensor conversion).

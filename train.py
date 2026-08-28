@@ -9,6 +9,7 @@
 
 import pandas as pd
 import json
+import torch
 # MY CONFIGURATION OF MODEL
 MODEL_NAME="xlm-roberta-base"
 NO_OF_LABELS=17 #sdgs
@@ -69,17 +70,38 @@ def load_data(csvPath):
     return texts, labels
 
 
-    class SDGDataset:
-        def __init__(self, texts, labels):
-            self.texts = texts
-            self.labels = labels
+from torch.utils.data import Dataset
+class SDGDataset(Dataset):
+    def __init__(self, texts, labels, tokenizer):
+        self.texts = texts
+        self.labels = labels
+        self.tokenizer = tokenizer
+    def __len__(self):
+        return len(self.texts)
+    def __getitem__(self, idx):
+        text = self.texts[idx]
+        label = self.labels[idx]
+        encoding = self.tokenizer(text, truncation=True, padding='max_length', max_length=256, return_tensors='pt')
 
-
+        input_ids = encoding['input_ids'].squeeze(0)
+        attention_mask = encoding['attention_mask'].squeeze(0)
+        return {
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
+            'labels': torch.tensor(label, dtype=torch.float)
+        }
+        
 
 
 texts, labels = load_data(CSV_PATH)
 
 
-print(f"Total number of samples: {len(texts)}") 
-print(texts[0])
-print(labels[0])
+from transformers import AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+
+dataset = SDGDataset(texts, labels, tokenizer)
+print(f"Dataset size: {len(dataset)} samples")
+sample = dataset[0]
+print("Sample input_ids shape:", sample['input_ids'].shape)
+print("Sample attention_mask shape:", sample['attention_mask'].shape)
+print("Sample labels:", sample['labels'])

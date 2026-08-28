@@ -38,8 +38,9 @@ which we traced back to an unlucky random train/test split.
   untouched on purpose while this branch is in progress)
 - no real numbers yet — pending a full training run
 ## status
-- load_data + parse_labels, verified with real CSV (1,238 samples, correct filtering, correct label vectors). 
-  
+- load_data + parse_labels, verified with real CSV (1,238 samples, correct filtering, correct label vectors).
+- SDGDataset class, verified end-to-end on Colab: dataset size matches (1,238), input_ids/attention_mask correctly shaped [256], lab els correctly returned as float tensors.
+
 ## Next step
 
-- SDGDataset class (tokenization + tensor conversion).
+- AsymmetricLoss class.

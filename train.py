@@ -10,6 +10,8 @@
 import pandas as pd
 import json
 import torch
+
+import torch.nn as nn
 # MY CONFIGURATION OF MODEL
 MODEL_NAME="xlm-roberta-base"
 NO_OF_LABELS=17 #sdgs
@@ -105,3 +107,26 @@ sample = dataset[0]
 print("Sample input_ids shape:", sample['input_ids'].shape)
 print("Sample attention_mask shape:", sample['attention_mask'].shape)
 print("Sample labels:", sample['labels'])
+
+class AsymmetricLoss(torch.nn.Module):
+    def __init__(self, gamma_neg=4, gamma_pos=1, clip=0.05):
+        super(AsymmetricLoss, self).__init__()
+        self.gamma_neg = gamma_neg
+        self.gamma_pos = gamma_pos
+        self.clip = clip
+    def forward(self, logits, targets):
+        probs_pos = torch.sigmoid(logits)
+        probs_neg=(1.0-probs_pos+self.clip).clamp(max=1.0)
+        loss_pos=targets * torch.log(probs_pos.clamp(min=1e-8)) * (1-probs_pos) ** self.gamma_pos
+        loss_neg=(1-targets) * torch.log(probs_neg.clamp(min=1e-8)) * (probs_neg) ** self.gamma_neg
+        loss=loss_pos+loss_neg
+        return -loss.mean()    
+
+fake_logits = torch.randn(4, 17)
+fake_targets = torch.randint(0, 2, (4, 17)).float()
+
+criterion = AsymmetricLoss()
+loss_value = criterion(fake_logits, fake_targets)
+print("Loss:", loss_value)
+
+    

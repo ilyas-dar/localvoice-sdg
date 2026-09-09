@@ -41,8 +41,10 @@ which we traced back to an unlucky random train/test split.
 - load_data + parse_labels, verified with real CSV (1,238 samples, correct filtering, correct label vectors).
 - SDGDataset class, verified end-to-end on Colab: dataset size matches (1,238), input_ids/attention_mask correctly shaped [256], lab els correctly returned as float tensors.
 - AsymmetricLoss class,verified with fake batch data produces a valid loss value as 0.2564.
+- Held-out test split verified 185 test / 1053 trainval samples also seeded and reproducible.
+
 
 
 ## Next step
 
-- Test split.
+- Stratified 5-fold split..

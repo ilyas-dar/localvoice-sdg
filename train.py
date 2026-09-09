@@ -12,6 +12,7 @@ import json
 import torch
 
 import torch.nn as nn
+import numpy as np
 # MY CONFIGURATION OF MODEL
 MODEL_NAME="xlm-roberta-base"
 NO_OF_LABELS=17 #sdgs
@@ -129,4 +130,22 @@ criterion = AsymmetricLoss()
 loss_value = criterion(fake_logits, fake_targets)
 print("Loss:", loss_value)
 
-    
+all_idxs=np.arange(len(texts))
+rand_num_generator=np.random.RandomState(seed=SEED42)
+shuf_idxs=rand_num_generator.permutation(all_idxs)
+
+n_test=int(len(texts)*TEST_PARTS)
+test_idxs=shuf_idxs[:n_test]
+trainval_idxs=shuf_idxs[n_test:]
+
+print(type(labels))
+
+test_texts=[texts[i] for i in test_idxs]
+test_labels=[labels[i] for i in test_idxs]
+
+trainval_texts=[texts[i] for i in trainval_idxs]
+trainval_labels=[labels[i] for i in trainval_idxs]
+
+print(f"test set {len(test_texts)} samples")
+print(f"trainval set {len(trainval_texts)} samples")
+print(f"total: {len(test_texts) + len(trainval_texts)}(should equal {len(texts)})")

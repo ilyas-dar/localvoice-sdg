@@ -13,6 +13,8 @@ import torch
 
 import torch.nn as nn
 import numpy as np
+
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 # MY CONFIGURATION OF MODEL
 MODEL_NAME="xlm-roberta-base"
 NO_OF_LABELS=17 #sdgs
@@ -149,3 +151,16 @@ trainval_labels=[labels[i] for i in trainval_idxs]
 print(f"test set {len(test_texts)} samples")
 print(f"trainval set {len(trainval_texts)} samples")
 print(f"total: {len(test_texts) + len(trainval_texts)}(should equal {len(texts)})")
+
+
+trainval_labels_arr = np.array(trainval_labels)
+print(trainval_labels_arr.shape)
+
+
+mskf = MultilabelStratifiedKFold(n_splits=MY_FOLDS, shuffle=True, random_state=SEED42)
+fold_splits = list(mskf.split(trainval_texts, trainval_labels_arr))
+print(len(fold_splits))
+
+first_fold_train, first_fold_val = fold_splits[0]
+print("train size:", len(first_fold_train))
+print("val size:", len(first_fold_val))

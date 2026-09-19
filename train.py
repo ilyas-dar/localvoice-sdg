@@ -112,6 +112,8 @@ print("Sample attention_mask shape:", sample['attention_mask'].shape)
 print("Sample labels:", sample['labels'])
 
 class AsymmetricLoss(torch.nn.Module):
+    # yeh loss function galat predictions ko sahi tarah se punish karta hai
+    # (asymmetric loss correctly punishes wrong predictions, unlike normal BCE)
     def __init__(self, gamma_neg=4, gamma_pos=1, clip=0.05):
         super(AsymmetricLoss, self).__init__()
         self.gamma_neg = gamma_neg
@@ -120,8 +122,15 @@ class AsymmetricLoss(torch.nn.Module):
     def forward(self, logits, targets):
         probs_pos = torch.sigmoid(logits)
         probs_neg=(1.0-probs_pos+self.clip).clamp(max=1.0)
+
+        # FIX: p_m is the shifted positive prob, used ONLY in the negative exponent.
+        # bug thi ke hum probs_neg use kar rahe thay yahan, jo confident-wrong
+        # predictions ko almost zero loss de deta tha (model "predict everything
+        # positive" seekh raha tha)
+        p_m = (probs_pos - self.clip).clamp(min=0.0)
+
         loss_pos=targets * torch.log(probs_pos.clamp(min=1e-8)) * (1-probs_pos) ** self.gamma_pos
-        loss_neg=(1-targets) * torch.log(probs_neg.clamp(min=1e-8)) * (probs_neg) ** self.gamma_neg
+        loss_neg=(1-targets) * torch.log(probs_neg.clamp(min=1e-8)) * (p_m) ** self.gamma_neg
         loss=loss_pos+loss_neg
         return -loss.mean()    
 
@@ -164,3 +173,17 @@ print(len(fold_splits))
 first_fold_train, first_fold_val = fold_splits[0]
 print("train size:", len(first_fold_train))
 print("val size:", len(first_fold_val))
+
+f_train_txt = []
+f_train_lbl = []
+for i in first_fold_train:
+    f_train_txt.append(trainval_texts[i])
+    f_train_lbl.append(trainval_labels[i])
+
+f_val_txt = []
+f_val_lbl = []
+for i in first_fold_val:
+    f_val_txt.append(trainval_texts[i])
+    f_val_lbl.append(trainval_labels[i])
+
+print(len(f_train_txt), len(f_val_txt))

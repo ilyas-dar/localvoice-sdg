@@ -40,10 +40,10 @@ which we traced back to an unlucky random train/test split.
 ## status
 - load_data + parse_labels, verified with real CSV (1,238 samples, correct filtering, correct label vectors).
 - SDGDataset class, verified end-to-end on Colab: dataset size matches (1,238), input_ids/attention_mask correctly shaped [256], lab els correctly returned as float tensors.
-- AsymmetricLoss class,verified with fake batch data produces a valid loss value as 0.2564.
-- Held-out test split verified 185 test / 1053 trainval samples also seeded and reproducible.
+- AsymmetricLoss class — found and fixed a real bug: the negative-term exponent used the wrong probability variable, causing the model to collapse into predicting every SDG as positive (recall=1.0, precision~0.09). Fixed and verified 3 ways: standalone numeric test, full 10-epoch fold-1 training run (F1 climbed 0.108 -> 0.919, no collapse), and clean local run with no errors.- Held-out test split verified 185 test / 1053 trainval samples also seeded and reproducible.
 - Stratified 5-fold split on trainval set ,5 folds produced each approx 845 train / aprox 208 
-
+- Fold dataset + dataloader, verified locally: 53 train batches / 13 val batches (matches expected 845/16 and 208/16).
 ## Next step
 
-- Per-fold training loop..
+- Fresh model load + optimizer + scheduler + training loop (with per-epoch val check), to be trained on Colab (GPU) — not run locally due to CPU training time.
+- Trained fold model weights to be downloaded from Colab and placed in models/fold_1/ locally.

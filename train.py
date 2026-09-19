@@ -187,3 +187,16 @@ for i in first_fold_val:
     f_val_lbl.append(trainval_labels[i])
 
 print(len(f_train_txt), len(f_val_txt))
+# ab is fold ke liye SDGDataset bana rahe hain (train aur val dono)
+fold_train_ds = SDGDataset(f_train_txt, f_train_lbl, tokenizer)
+fold_val_ds = SDGDataset(f_val_txt, f_val_lbl, tokenizer)
+
+from torch.utils.data import DataLoader
+
+# DataLoader batches banata hai training ke liye
+# train wala shuffle=True hai taake har epoch mein order alag ho
+# val wala shuffle=False hai kyunke order se koi farq nahi parta evaluation mein
+fold_train_loader = DataLoader(fold_train_ds, batch_size=THE_BATCH_SIZE, shuffle=True)
+fold_val_loader = DataLoader(fold_val_ds, batch_size=THE_BATCH_SIZE, shuffle=False)
+
+print(len(fold_train_loader), len(fold_val_loader))   # expect 53 13

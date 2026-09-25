@@ -43,6 +43,7 @@ which we traced back to an unlucky random train/test split.
 - AsymmetricLoss class — found and fixed a real bug: the negative-term exponent used the wrong probability variable, causing the model to collapse into predicting every SDG as positive (recall=1.0, precision~0.09). Fixed and verified 3 ways: standalone numeric test, full 10-epoch fold-1 training run (F1 climbed 0.108 -> 0.919, no collapse), and clean local run with no errors.- Held-out test split verified 185 test / 1053 trainval samples also seeded and reproducible.
 - Stratified 5-fold split on trainval set ,5 folds produced each approx 845 train / aprox 208 
 - Fold dataset + dataloader, verified locally: 53 train batches / 13 val batches (matches expected 845/16 and 208/16).
+- Model and  device setup--- locally on CPU: model downloads and loads correctly (XLM-RoBERTa-base, fresh classification head for 17 labels), cpu locally, will be cuda on Colab.
 ## Next step
 
 - Fresh model load + optimizer + scheduler + training loop (with per-epoch val check), to be trained on Colab (GPU) — not run locally due to CPU training time.

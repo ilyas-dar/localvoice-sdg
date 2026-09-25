@@ -58,8 +58,8 @@ def parse_labels(label_str):
     return labels
     
 
-def load_data(csvPath):
-    df=pd.read_csv(csvPath)
+def load_data(CSV_PATH):
+    df=pd.read_csv(CSV_PATH)
     texts=df['text'].tolist()
     df["parsed_labels"]=df["sdg_labels"].apply(parse_labels)
     df=df[df["parsed_labels"].apply(len)>0]
@@ -200,3 +200,18 @@ fold_train_loader = DataLoader(fold_train_ds, batch_size=THE_BATCH_SIZE, shuffle
 fold_val_loader = DataLoader(fold_val_ds, batch_size=THE_BATCH_SIZE, shuffle=False)
 
 print(len(fold_train_loader), len(fold_val_loader))   # expect 53 13
+
+# GPU available hai ya nahi, check karte hain
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
+
+from transformers import AutoModelForSequenceClassification
+
+# har fold ke liye ek fresh, untrained model chahiye
+fold_model = AutoModelForSequenceClassification.from_pretrained(
+    MODEL_NAME,
+    num_labels=NO_OF_LABELS,
+    problem_type="multi_label_classification"
+)
+fold_model = fold_model.to(device)   # model ko GPU (ya CPU) par bhejna
+print(next(fold_model.parameters()).device)
